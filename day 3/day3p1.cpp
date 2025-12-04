@@ -53,7 +53,7 @@ int main() {
         const auto t2 = chrono::high_resolution_clock::now();
         cout << "Joltage: " << sum << endl;
         const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        cout << "Time (s): " << duration / 1000 << endl;
+        cout << "Time (s): " << duration / 1000 << endl; // ~0.00054s
         return 0;
     }
     cout << "Failed to open input file" << endl;

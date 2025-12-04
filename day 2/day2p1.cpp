@@ -160,6 +160,6 @@ int main() {
     const auto t2 = chrono::high_resolution_clock::now();
     const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
     cout << "Sum: " << sum << endl;
-    cout << "Time (s): " << duration / 1000 << endl;
+    cout << "Time (s): " << duration / 1000 << endl; // ~0.0033s
     return 0;
 }
