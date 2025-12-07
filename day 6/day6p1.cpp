@@ -78,30 +78,31 @@ int main() {
         cout << "Invalid" << endl;
         return 1;
     }
+    double total = 0;
+    for (int i = 0; i < 50; i++) {
+        const auto t1 = chrono::steady_clock::now();
+        if (ifstream input(file); input.is_open()) {
+            string line;
+            vector<vector<uint64_t>> rows;
+            while (getline(input, line) && line.find("+") == string::npos) {
+                // add everything to rows first
+                AddRow(line, rows);
+            }
 
-    const auto t1 = chrono::high_resolution_clock::now();
-    if (ifstream input(file); input.is_open()) {
-        string line;
-        vector<vector<uint64_t>> rows;
-        while (getline(input, line) && line.find("+") == string::npos) {
-            // add everything to rows first
-            AddRow(line, rows);
+            const auto end = ranges::remove(line, ' ').begin();
+            line.erase(end, line.end());
+
+            const uint64_t sum = Perform(rows, line);
+            input.close();
+
+            const auto t2 = chrono::steady_clock::now();
+            cout << "HW Answer: " << sum << endl;
+            total += std::chrono::duration<double, micro>(t2 - t1).count();
+        } else {
+            cout << "Failed to open file!" << endl;
+            return 1;
         }
-
-        const auto end = ranges::remove(line, ' ').begin();
-        line.erase(end, line.end());
-
-        const uint64_t sum = Perform(rows, line);
-        input.close();
-
-        const auto t2 = chrono::high_resolution_clock::now();
-        cout << "Answer: " << sum << endl; // ~ 0.0033s
-        const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        cout << "Time (s): " << duration / 1000 << endl;
-        return 0;
     }
-    cout << "Failed to open input file" << endl;
-    return 1;
-
-
+    cout << "Time (us, avg 50): " << fixed << setprecision(2) << total / 50 << endl; // ~ 1970.82us
+    return 0;
 }

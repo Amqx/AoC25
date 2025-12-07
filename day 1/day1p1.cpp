@@ -24,21 +24,34 @@ void pt1(int &count, int &curr, const string &line) {
 }
 
 int main() {
-    const auto t1 = chrono::high_resolution_clock::now();
-    if (ifstream input(R"(C:\Users\Jonathan\git\aoc25\day 1\input.txt)"); input.is_open()) {
-        int curr = 50;
-        int password = 0;
-        string line;
-        while (getline(input, line)) {
-            pt1(password, curr, line);
-        }
-        input.close();
-        const auto t2 = chrono::high_resolution_clock::now();
-        cout << "Number of 0s: " << to_string(password) << endl;
-        const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        cout << "Time (s): " << duration / 1000 << endl; // ~0.0031s
-        return 0;
+    cout << "Which input (test/ input): " << endl;
+    string file;
+    cin >> file;
+    if (file == "test") file = R"(C:\Users\Jonathan\git\aoc25\day 1\test.txt)";
+    else if (file == "input") file = R"(C:\Users\Jonathan\git\aoc25\day 1\input.txt)";
+    else {
+        cout << "Invalid" << endl;
+        return 1;
     }
-    cout << "Failed to open input file" << endl;
-    return 1;
+    double total = 0;
+    for (int i = 0; i < 50; i++) {
+        const auto t1 = chrono::steady_clock::now();
+        if (ifstream input(file); input.is_open()) {
+            int curr = 50;
+            int password = 0;
+            string line;
+            while (getline(input, line)) {
+                pt1(password, curr, line);
+            }
+            input.close();
+            const auto t2 = chrono::steady_clock::now();
+            cout << "Number of 0s: " << to_string(password) << endl;
+            total += std::chrono::duration<double, micro>(t2 - t1).count();
+        } else {
+            cout << "Failed to open file!" << endl;
+            return 1;
+        }
+    }
+    cout << "Time (us, avg 50): " << fixed << setprecision(2) << total / 50 << endl; // ~ 2025.54us
+    return 0;
 }

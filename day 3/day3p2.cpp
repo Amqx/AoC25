@@ -41,21 +41,34 @@ uint64_t part2(const string& line) {
 
 
 int main() {
-    const auto t1 = chrono::high_resolution_clock::now();
-    if (ifstream input(R"(C:\Users\Jonathan\git\aoc25\day 3\input.txt)"); input.is_open()) {
-        uint64_t sum = 0;
-        string line;
-        while (getline(input, line)) {
-            const uint64_t val = part2(line);
-            sum += val;
-        }
-        input.close();
-        const auto t2 = chrono::high_resolution_clock::now();
-        cout << "Joltage: " << sum << endl;
-        const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        cout << "Time (s): " << duration / 1000 << endl; // ~0.0016s
-        return 0;
+    cout << "Which input (test/ input): " << endl;
+    string file;
+    cin >> file;
+    if (file == "test") file = R"(C:\Users\Jonathan\git\aoc25\day 3\test.txt)";
+    else if (file == "input") file = R"(C:\Users\Jonathan\git\aoc25\day 3\input.txt)";
+    else {
+        cout << "Invalid" << endl;
+        return 1;
     }
-    cout << "Failed to open input file" << endl;
-    return 1;
+    double total = 0;
+    for (int i = 0; i < 50; i++) {
+        const auto t1 = chrono::steady_clock::now();
+        if (ifstream input(file); input.is_open()) {
+            uint64_t sum = 0;
+            string line;
+            while (getline(input, line)) {
+                const uint64_t val = part2(line);
+                sum += val;
+            }
+            input.close();
+            const auto t2 = chrono::steady_clock::now();
+            cout << "Joltage: " << sum << endl;
+            total += std::chrono::duration<double, micro>(t2 - t1).count();
+        } else {
+            cout << "Failed to open file!" << endl;
+            return 1;
+        }
+    }
+    cout << "Time (us, avg 50): " << fixed << setprecision(2) << total / 50 << endl; // ~ 897.93us
+    return 0;
 }

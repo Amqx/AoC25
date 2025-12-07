@@ -105,28 +105,39 @@ uint64_t repeated(uint64_t low, uint64_t high) {
 }
 
 int main() {
-    const auto t1 = chrono::high_resolution_clock::now();
-    string line;
-    if (ifstream input(R"(C:\Users\Jonathan\git\aoc25\day 2\input.txt)"); input.is_open()) {
-        getline(input, line);
-        input.close();
-    } else {
-        cout << "Failed to open file" << endl;
+    cout << "Which input (test/ input): " << endl;
+    string file;
+    cin >> file;
+    if (file == "test") file = R"(C:\Users\Jonathan\git\aoc25\day 2\test.txt)";
+    else if (file == "input") file = R"(C:\Users\Jonathan\git\aoc25\day 2\input.txt)";
+    else {
+        cout << "Invalid" << endl;
         return 1;
     }
-    const auto regions = GetRegions(line);
+    double total = 0;
+    for (int i = 0; i < 50; i++) {
+        const auto t1 = chrono::steady_clock::now();
+        string line;
+        if (ifstream input(file); input.is_open()) {
+            getline(input, line);
+            input.close();
+        } else {
+            cout << "Failed to open file" << endl;
+            return 1;
+        }
+        const auto regions = GetRegions(line);
 
-    uint64_t sum = 0;
+        uint64_t sum = 0;
 
-    for (const auto& curr : regions) {
-        const uint64_t low = curr[0];
-        const uint64_t high = curr[1];
-        sum += repeated(low, high);
+        for (const auto& curr : regions) {
+            const uint64_t low = curr[0];
+            const uint64_t high = curr[1];
+            sum += repeated(low, high);
+        }
+        const auto t2 = chrono::steady_clock::now();
+        cout << "Sum: " << sum << endl;
+        total += std::chrono::duration<double, micro>(t2 - t1).count();
     }
-    const auto t2 = chrono::high_resolution_clock::now();
-    const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-    cout << "Sum: " << sum << endl;
-    cout << "Time (s): " << duration / 1000 << endl; // ~0.0011s
-
+    cout << "Time (us, avg 50): " << fixed << setprecision(2) << total / 50 << endl; // ~ 384.55us
     return 0;
 }

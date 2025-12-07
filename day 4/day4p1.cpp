@@ -36,66 +36,67 @@ int main() {
         cout << "Invalid" << endl;
         return 1;
     }
+    double total = 0;
+    for (int attempt = 0; attempt < 50; attempt++) {
+        const auto t1 = chrono::steady_clock::now();
+        if (ifstream input(file); input.is_open()) {
+            int sum = 0;
+            string prev, curr, next;
 
-    const auto t1 = chrono::high_resolution_clock::now();
-    if (ifstream input(file); input.is_open()) {
-        int sum = 0;
-        string prev, curr, next;
+            getline(input, curr);
+            getline(input, next);
 
-        getline(input, curr);
-        getline(input, next);
+            int length = curr.length();
+            const auto empty = string(length, '.');
 
-        int length = curr.length();
-        const auto empty = string(length, '.');
+            do {
+                if (prev.empty()) {
+                    prev = empty;
+                }
 
-        do {
-            if (prev.empty()) {
-                prev = empty;
-            }
+                if (next.empty()) {
+                    next = empty;
+                }
 
-            if (next.empty()) {
-                next = empty;
-            }
-
-            for (int i = 0; i < length; i++) {
-                if (curr[i] == '@') {
-                    int rolls = 0;
-                    if (i == 0) {
-                        for (int k = i; k <= i+1; k++) {
-                            if (curr[k] == '@') rolls++;
-                            if (prev[k] == '@') rolls++;
-                            if (next[k] == '@') rolls++;
+                for (int i = 0; i < length; i++) {
+                    if (curr[i] == '@') {
+                        int rolls = 0;
+                        if (i == 0) {
+                            for (int k = i; k <= i+1; k++) {
+                                if (curr[k] == '@') rolls++;
+                                if (prev[k] == '@') rolls++;
+                                if (next[k] == '@') rolls++;
+                            }
+                        } else if (i == length - 1) {
+                            for (int k = i - 1; k <= i; k++) {
+                                if (curr[k] == '@') rolls++;
+                                if (prev[k] == '@') rolls++;
+                                if (next[k] == '@') rolls++;
+                            }
+                        } else {
+                            for (int k = i-1; k <= i+1; k++) {
+                                if (curr[k] == '@') rolls++;
+                                if (prev[k] == '@') rolls++;
+                                if (next[k] == '@') rolls++;
+                            }
                         }
-                    } else if (i == length - 1) {
-                        for (int k = i - 1; k <= i; k++) {
-                            if (curr[k] == '@') rolls++;
-                            if (prev[k] == '@') rolls++;
-                            if (next[k] == '@') rolls++;
-                        }
-                    } else {
-                        for (int k = i-1; k <= i+1; k++) {
-                            if (curr[k] == '@') rolls++;
-                            if (prev[k] == '@') rolls++;
-                            if (next[k] == '@') rolls++;
-                        }
-                    }
 
-                    if (rolls < 5) {
-                        sum += 1;
+                        if (rolls < 5) {
+                            sum += 1;
+                        }
                     }
                 }
-            }
-        } while (GetAll(input, prev, curr, next));
+            } while (GetAll(input, prev, curr, next));
 
         input.close();
-        const auto t2 = chrono::high_resolution_clock::now();
-        cout << "Rolls: " << sum << endl; // ~0.0010s
-        const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        cout << "Time (s): " << duration / 1000 << endl;
-        return 0;
+        const auto t2 = chrono::steady_clock::now();
+        cout << "Rolls: " << sum << endl;
+        total += std::chrono::duration<double, micro>(t2 - t1).count();
+        } else {
+            cout << "Failed to open file!" << endl;
+            return 1;
+        }
     }
-    cout << "Failed to open input file" << endl;
-    return 1;
-
-
+    cout << "Time (us, avg 50): " << fixed << setprecision(2) << total / 50 << endl; // ~ 308.91us
+    return 0;
 }

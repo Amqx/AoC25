@@ -52,25 +52,28 @@ int main() {
         cout << "Invalid" << endl;
         return 1;
     }
+    double total = 0;
+    for (int i = 0; i < 50; i++) {
+        const auto t1 = chrono::steady_clock::now();
+        if (ifstream input(file); input.is_open()) {
+            uint64_t sum = 0;
+            string line;
+            vector<vector<uint64_t>> ranges;
+            while (getline(input, line) && !line.empty()) {
+                GetRanges(line, ranges);
+            }
 
-    const auto t1 = chrono::high_resolution_clock::now();
-    if (ifstream input(file); input.is_open()) {
-        uint64_t sum = 0;
-        string line;
-        vector<vector<uint64_t>> ranges;
-        while (getline(input, line) && !line.empty()) {
-            GetRanges(line, ranges);
+            sum = Fresh(ranges);
+
+            input.close();
+            const auto t2 = chrono::steady_clock::now();
+            cout << "Fresh ingredients: " << sum << endl;
+            total += std::chrono::duration<double, micro>(t2 - t1).count();
+        } else {
+            cout << "Failed to open file!" << endl;
+            return 1;
         }
-
-        sum = Fresh(ranges);
-
-        input.close();
-        const auto t2 = chrono::high_resolution_clock::now();
-        cout << "Fresh ingredients: " << sum << endl; // ~0.00108s
-        const auto duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        cout << "Time (s): " << duration / 1000 << endl;
-        return 0;
     }
-    cout << "Failed to open input file" << endl;
-    return 1;
+    cout << "Time (us, avg 50): " << fixed << setprecision(2) << total / 50 << endl; // ~ 649.70us
+    return 0;
 }
